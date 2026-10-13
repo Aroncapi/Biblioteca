@@ -1,0 +1,35 @@
+<nav class="navbar navbar-expand-lg navbar-modern">
+  <div class="container-fluid">
+    <a class="navbar-brand" [routerLink]="auth.rutaInicio()">
+      <i class="bi bi-book-half"></i>
+      <span>Biblioteca Escolar</span>
+    </a>
+    <button class="navbar-toggler" type="button" (click)="colapsado.set(!colapsado())" aria-label="Menú">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="navbar-collapse" [class.collapse]="!colapsado()" [class.show]="colapsado()">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button"
+             (click)="$event.preventDefault(); menuAbierto.set(!menuAbierto())">
+            <span class="user-avatar"><i class="bi bi-person"></i></span>
+            <span>{{ auth.nombreCompleto() }}</span>
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end" [class.show]="menuAbierto()">
+            <li>
+              <a class="dropdown-item" [routerLink]="rutaPerfil()" (click)="menuAbierto.set(false)">
+                <i class="bi bi-person-circle"></i> Mi Perfil
+              </a>
+            </li>
+            <li><hr class="dropdown-divider"></li>
+            <li>
+              <button type="button" class="dropdown-item text-danger" (click)="cerrarSesion()">
+                <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
+              </button>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>

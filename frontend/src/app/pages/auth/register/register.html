@@ -1,0 +1,133 @@
+<div class="container-fluid min-vh-100 d-flex align-items-center justify-content-center py-5"
+     style="background: linear-gradient(135deg, #0b2b4f 0%, #1e4a7a 50%, #2c6b9e 100%); position: relative; overflow: hidden;">
+
+  <div style="position:absolute;top:-50px;right:-50px;width:300px;height:300px;background:radial-gradient(circle,rgba(255,255,255,0.1) 0%,transparent 70%);border-radius:50%;"></div>
+  <div style="position:absolute;bottom:-80px;left:-80px;width:400px;height:400px;background:radial-gradient(circle,rgba(255,255,255,0.08) 0%,transparent 70%);border-radius:50%;"></div>
+
+  <div class="container" style="position: relative; z-index: 10;">
+    <div class="row justify-content-center">
+      <div class="col-md-8 col-lg-6">
+        <div class="card border-0 rounded-5 shadow-lg overflow-hidden fade-in-up">
+          <div class="text-center py-5" style="background: linear-gradient(135deg, #0b2b4f 0%, #1e4a7a 100%);">
+            <div class="mb-3">
+              <div style="width:80px;height:80px;background:rgba(255,255,255,0.2);border-radius:20px;margin:0 auto;display:flex;align-items:center;justify-content:center;">
+                <i class="bi bi-person-plus-fill text-white" style="font-size: 3rem;"></i>
+              </div>
+            </div>
+            <h2 class="fw-bold text-white mb-1" style="font-family: 'Poppins', sans-serif;">Registro de Alumno</h2>
+            <p class="text-white-50 mb-0">Complete sus datos para registrarse</p>
+          </div>
+
+          <div class="card-body p-5">
+            <form #f="ngForm" (ngSubmit)="registrar(f)" novalidate [class.was-validated]="enviado()">
+              <div class="row">
+                <div class="col-md-6 mb-4">
+                  <label for="nombre" class="form-label fw-semibold" style="color:#1e4a7a;"><i class="bi bi-person me-2"></i>Nombre</label>
+                  <div class="input-group">
+                    <span class="input-group-text bg-light border-0 rounded-start-4 px-3"><i class="bi bi-person" style="color:#1e4a7a;"></i></span>
+                    <input type="text" class="form-control border-0 bg-light py-3" id="nombre" name="nombre" [(ngModel)]="datos.nombre" required minlength="2" maxlength="50" placeholder="Ej: Juan">
+                    <div class="invalid-feedback">Por favor ingrese su nombre (mínimo 2 caracteres).</div>
+                  </div>
+                </div>
+                <div class="col-md-6 mb-4">
+                  <label for="apellido" class="form-label fw-semibold" style="color:#1e4a7a;"><i class="bi bi-person me-2"></i>Apellido</label>
+                  <div class="input-group">
+                    <span class="input-group-text bg-light border-0 rounded-start-4 px-3"><i class="bi bi-person" style="color:#1e4a7a;"></i></span>
+                    <input type="text" class="form-control border-0 bg-light py-3" id="apellido" name="apellido" [(ngModel)]="datos.apellido" required minlength="2" maxlength="50" placeholder="Ej: Pérez">
+                    <div class="invalid-feedback">Por favor ingrese su apellido (mínimo 2 caracteres).</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mb-4">
+                <label for="email" class="form-label fw-semibold" style="color:#1e4a7a;"><i class="bi bi-envelope me-2"></i>Correo Electrónico</label>
+                <div class="input-group">
+                  <span class="input-group-text bg-light border-0 rounded-start-4 px-3"><i class="bi bi-envelope" style="color:#1e4a7a;"></i></span>
+                  <input type="email" class="form-control border-0 bg-light py-3" id="email" name="email" [(ngModel)]="datos.email" required email placeholder="ejemplo@email.com">
+                  <div class="invalid-feedback">Por favor ingrese un correo válido.</div>
+                </div>
+              </div>
+
+              <div class="mb-4">
+                <label for="password" class="form-label fw-semibold" style="color:#1e4a7a;"><i class="bi bi-lock me-2"></i>Contraseña</label>
+                <div class="input-group">
+                  <span class="input-group-text bg-light border-0 rounded-start-4 px-3"><i class="bi bi-lock" style="color:#1e4a7a;"></i></span>
+                  <input type="password" class="form-control border-0 bg-light py-3" id="password" name="password" [(ngModel)]="datos.password" required minlength="6" placeholder="••••••••" autocomplete="new-password">
+                  <div class="invalid-feedback">La contraseña debe tener al menos 6 caracteres.</div>
+                </div>
+                <div class="form-text"><i class="bi bi-info-circle me-1" style="color:#1e4a7a;"></i>Mínimo 6 caracteres</div>
+              </div>
+
+              <div class="bg-light p-4 rounded-4 mb-4">
+                <h6 class="fw-semibold mb-3" style="color:#1e4a7a;"><i class="bi bi-backpack me-2"></i>Información Académica</h6>
+                <div class="row">
+                  <div class="col-md-4 mb-3">
+                    <label for="nivel" class="form-label">Nivel</label>
+                    <select class="form-select bg-white border-0 py-2" id="nivel" name="nivel" [(ngModel)]="datos.nivel" required>
+                      <option value="">Seleccione...</option>
+                      <option value="PRIMARIA">🏫 Primaria</option>
+                      <option value="SECUNDARIA">📚 Secundaria</option>
+                    </select>
+                    <div class="invalid-feedback">Seleccione un nivel.</div>
+                  </div>
+                  <div class="col-md-4 mb-3">
+                    <label for="grado" class="form-label">Grado</label>
+                    <select class="form-select bg-white border-0 py-2" id="grado" name="grado" [(ngModel)]="datos.grado" required>
+                      <option value="">Seleccione...</option>
+                      @for (g of grados; track g) { <option [value]="g">{{ g }}°</option> }
+                    </select>
+                    <div class="invalid-feedback">Seleccione un grado.</div>
+                  </div>
+                  <div class="col-md-4 mb-3">
+                    <label for="seccion" class="form-label">Sección</label>
+                    <select class="form-select bg-white border-0 py-2" id="seccion" name="seccion" [(ngModel)]="datos.seccion" required>
+                      <option value="">Seleccione...</option>
+                      @for (s of secciones; track s) { <option [value]="s">{{ s }}</option> }
+                    </select>
+                    <div class="invalid-feedback">Seleccione una sección.</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mb-4 form-check">
+                <input type="checkbox" class="form-check-input" id="terminos" name="terminos" [(ngModel)]="terminos" required>
+                <label class="form-check-label" for="terminos">
+                  Acepto los <a href="#" (click)="$event.preventDefault()" class="text-decoration-none" style="color:#1e4a7a;">términos y condiciones</a>
+                  y la <a href="#" (click)="$event.preventDefault()" class="text-decoration-none" style="color:#1e4a7a;">política de privacidad</a>
+                </label>
+                <div class="invalid-feedback">Debe aceptar los términos para continuar.</div>
+              </div>
+
+              <button type="submit" class="btn-modern primary w-100 py-3 mb-4" style="font-size:1.1rem;">
+                <i class="bi bi-check-circle"></i> Registrarse
+              </button>
+
+              <div class="text-center position-relative my-4">
+                <hr class="text-muted">
+                <span class="px-3 bg-white text-muted position-absolute top-50 start-50 translate-middle">o</span>
+              </div>
+              <div class="text-center">
+                <p class="text-muted mb-0">
+                  ¿Ya tienes cuenta?
+                  <a routerLink="/login" class="text-decoration-none fw-semibold" style="color:#1e4a7a;border-bottom:2px solid #1e4a7a20;">Inicia Sesión</a>
+                </p>
+              </div>
+            </form>
+          </div>
+
+          <div class="card-footer border-0 py-4" style="background:#f8fafc;">
+            <div class="row text-center">
+              <div class="col-4"><i class="bi bi-book text-primary" style="font-size:1.5rem;"></i><small class="d-block text-muted">Acceso a libros</small></div>
+              <div class="col-4"><i class="bi bi-clock-history text-success" style="font-size:1.5rem;"></i><small class="d-block text-muted">Préstamos en línea</small></div>
+              <div class="col-4"><i class="bi bi-bell text-warning" style="font-size:1.5rem;"></i><small class="d-block text-muted">Notificaciones</small></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="text-center mt-4 text-white-50">
+          <small><i class="bi bi-info-circle me-1"></i>El registro es completamente gratuito para alumnos de la institución</small>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

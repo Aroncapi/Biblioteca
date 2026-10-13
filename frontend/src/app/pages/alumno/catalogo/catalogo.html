@@ -1,0 +1,64 @@
+<div class="content-header">
+  <h2><i class="bi bi-grid me-2"></i>Catálogo de Libros</h2>
+  <div class="date-badge"><i class="bi bi-bookmark-check"></i><span>Préstamos: {{ activos() }}/{{ maximo }}</span></div>
+</div>
+
+<div class="row mb-4">
+  <div class="col-md-4"><div class="stat-card-modern"><div class="stat-icon"><i class="bi bi-book"></i></div><div class="stat-number">{{ libros().length }}</div><div class="stat-label">Libros en catálogo</div></div></div>
+  <div class="col-md-4"><div class="stat-card-modern variant-2"><div class="stat-icon"><i class="bi bi-check-circle"></i></div><div class="stat-number">{{ disponibles() }}</div><div class="stat-label">Disponibles</div></div></div>
+  <div class="col-md-4"><div class="stat-card-modern variant-3"><div class="stat-icon"><i class="bi bi-tags"></i></div><div class="stat-number">{{ categorias().length }}</div><div class="stat-label">Categorías</div></div></div>
+</div>
+
+<div class="input-group mb-3">
+  <span class="input-group-text bg-white border-0 ps-4"><i class="bi bi-search" style="color:#1e4a7a;"></i></span>
+  <input type="text" class="form-control border-0 py-3" placeholder="Buscar por título o categoría..." [value]="busqueda()" (input)="busqueda.set($any($event.target).value)">
+</div>
+
+<div class="mb-4">
+  <button type="button" class="filtro-categoria-modern" [class.active]="categoria() === 'todos'" (click)="categoria.set('todos')">Todos</button>
+  @for (c of categorias(); track c) {
+    <button type="button" class="filtro-categoria-modern" [class.active]="categoria() === c" (click)="categoria.set(c)">{{ c }}</button>
+  }
+</div>
+
+@if (cargando()) {
+  <div class="empty-state"><div class="spinner-ring mb-3"></div>Cargando catálogo...</div>
+} @else if (filtrados().length === 0) {
+  <div class="empty-state">
+    <i class="bi bi-search"></i>
+    <h4 class="fw-bold mb-2">No se encontraron libros</h4>
+    <p>Prueba con otro término o categoría.</p>
+    <button class="btn-modern outline mt-2" type="button" (click)="limpiar()"><i class="bi bi-x-circle"></i> Limpiar filtros</button>
+  </div>
+} @else {
+  <div class="row">
+    @for (l of filtrados(); track l.id; let i = $index) {
+      <div class="col-md-6 col-xl-4 mb-4">
+        <div class="card-modern h-100 fade-in-up" [style.animation-delay]="(i % 9) * 0.05 + 's'">
+          <div class="card-body p-4 d-flex flex-column">
+            <div class="d-flex justify-content-between align-items-start mb-3">
+              <span class="badge-modern info px-3 py-2">{{ l.categoria }}</span>
+              <span class="badge-modern" [class.success]="l.stockDisponible! > 0" [class.danger]="l.stockDisponible! <= 0">
+                <i class="bi" [class.bi-check-circle]="l.stockDisponible! > 0" [class.bi-x-circle]="l.stockDisponible! <= 0"></i>
+                {{ l.stockDisponible }} disponibles
+              </span>
+            </div>
+            <div class="text-center mb-3">
+              <div style="width:70px;height:70px;background:linear-gradient(135deg,#1e4a7a20,#00c9b720);border-radius:20px;margin:0 auto;display:flex;align-items:center;justify-content:center;">
+                <i class="bi bi-book" style="font-size:2rem;color:#1e4a7a;"></i>
+              </div>
+            </div>
+            <h5 class="card-title fw-bold text-center mb-3" style="color:#1e4a7a;">{{ l.nombre }}</h5>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+              <code class="bg-light p-2 rounded-3">{{ l.codigoLibro }}</code>
+              <small class="fw-semibold">{{ l.stockDisponible }}/{{ l.stockTotal }}</small>
+            </div>
+            <button class="btn-modern w-100 py-3 mt-auto" [class.primary]="l.stockDisponible! > 0" [disabled]="l.stockDisponible! <= 0" type="button" (click)="solicitar(l)">
+              <i class="bi bi-bookmark-plus"></i> {{ l.stockDisponible! > 0 ? 'Solicitar Préstamo' : 'No disponible' }}
+            </button>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+}

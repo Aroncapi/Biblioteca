@@ -1,0 +1,103 @@
+<div class="content-header">
+  <h2><i class="bi bi-clock-history me-2"></i>Mis Préstamos</h2>
+  <div class="date-badge"><i class="bi bi-calendar3"></i><span>{{ hoy | date: 'dd/MM/yyyy' }}</span></div>
+</div>
+
+<div class="row mb-4">
+  <div class="col-md-4"><div class="stat-card-modern variant-2"><div class="stat-icon"><i class="bi bi-book-half"></i></div><div class="stat-number">{{ activos().length }}</div><div class="stat-label">Activos</div></div></div>
+  <div class="col-md-4"><div class="stat-card-modern"><div class="stat-icon"><i class="bi bi-arrow-return-left"></i></div><div class="stat-number">{{ devueltos().length }}</div><div class="stat-label">Devueltos</div></div></div>
+  <div class="col-md-4"><div class="stat-card-modern variant-3"><div class="stat-icon"><i class="bi bi-exclamation-triangle"></i></div><div class="stat-number">{{ vencidos().length }}</div><div class="stat-label">Vencidos</div></div></div>
+</div>
+
+<div class="mb-4">
+  <button type="button" class="nav-link-modern" [class.active]="pestana() === 'TODOS'" (click)="cambiarPestana('TODOS')">Todos <span class="badge-modern info ms-2">{{ todos().length }}</span></button>
+  <button type="button" class="nav-link-modern" [class.active]="pestana() === 'ACTIVO'" (click)="cambiarPestana('ACTIVO')">Activos <span class="badge-modern success ms-2">{{ activos().length }}</span></button>
+  <button type="button" class="nav-link-modern" [class.active]="pestana() === 'DEVUELTO'" (click)="cambiarPestana('DEVUELTO')">Devueltos <span class="badge-modern info ms-2">{{ devueltos().length }}</span></button>
+  <button type="button" class="nav-link-modern" [class.active]="pestana() === 'VENCIDO'" (click)="cambiarPestana('VENCIDO')">Vencidos <span class="badge-modern danger ms-2">{{ vencidos().length }}</span></button>
+</div>
+
+<div class="card-modern">
+  <div class="card-body">
+    @if (cargando()) {
+      <div class="empty-state"><div class="spinner-ring mb-3"></div>Cargando préstamos...</div>
+    } @else if (lista().length === 0) {
+      <div class="empty-state"><i class="bi bi-inbox"></i>No tienes préstamos en esta categoría</div>
+    } @else {
+      <div class="table-responsive">
+        <table class="table-modern">
+          <thead>
+            <tr>
+              <th>Libro</th><th>Fecha Préstamo</th>
+              <th>{{ pestana() === 'DEVUELTO' ? 'Fecha Devolución' : 'Devolución Estimada' }}</th>
+              <th>{{ pestana() === 'ACTIVO' ? 'Días Restantes' : pestana() === 'VENCIDO' ? 'Días de Retraso' : 'Estado' }}</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (p of visibles(); track p.id) {
+              <tr>
+                <td><strong>{{ p.libroNombre }}</strong><br><small class="text-muted">{{ p.libroCodigo }}</small></td>
+                <td>{{ p.fechaPrestamo | date: 'dd/MM/yyyy HH:mm' }}</td>
+                <td>{{ (pestana() === 'DEVUELTO' ? p.fechaDevolucionReal : p.fechaDevolucionEstimada) | date: 'dd/MM/yyyy HH:mm' }}</td>
+                <td>
+                  @if (pestana() === 'ACTIVO') { <span class="badge-modern" [class.success]="(p.diasRestantes ?? 0) > 2" [class.warning]="(p.diasRestantes ?? 0) <= 2">{{ p.diasRestantes }} días</span> }
+                  @else if (pestana() === 'VENCIDO') { <span class="badge-modern danger">{{ p.diasRetraso }} días</span> }
+                  @else { <span class="badge-modern" [class]="clase(p.estado)">{{ p.estado }}</span> }
+                </td>
+                <td>
+                  <div class="d-flex gap-2">
+                    <button class="btn-icon" type="button" title="Ver detalle" (click)="verDetalle(p)"><i class="bi bi-eye"></i></button>
+                    @if (p.estado === 'ACTIVO' || p.estado === 'VENCIDO') {
+                      <button class="btn-icon success" type="button" title="Devolver libro" (click)="devolver(p)"><i class="bi bi-arrow-return-left"></i></button>
+                    }
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      <app-paginator [total]="lista().length" [(pagina)]="pagina" />
+    }
+  </div>
+</div>
+
+@if (ultimasDevoluciones().length > 0) {
+  <div class="card-modern mt-4">
+    <div class="card-header"><span><i class="bi bi-check2-circle me-2"></i>Últimas devoluciones</span></div>
+    <div class="card-body">
+      @for (p of ultimasDevoluciones(); track p.id) {
+        <div class="d-flex align-items-center mb-3">
+          <div class="user-avatar small me-3"><i class="bi bi-check"></i></div>
+          <div>
+            <p class="mb-0 fw-semibold">Devolviste: {{ p.libroNombre }}</p>
+            <small class="text-muted">Fecha: {{ p.fechaDevolucionReal | date: 'dd/MM/yyyy HH:mm' }}</small>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+}
+
+<app-modal [abierto]="!!detalle()" titulo="Detalle del Préstamo" icono="bi-info-circle" tema="teal" (cerrar)="detalle.set(null)">
+  @if (detalle(); as p) {
+    <div class="bg-light p-4 rounded-4">
+      <table class="table table-borderless mb-0">
+        <tr><td class="fw-semibold">Libro:</td><td class="fw-bold">{{ p.libroNombre }}</td></tr>
+        <tr><td class="fw-semibold">Código:</td><td><code>{{ p.libroCodigo }}</code></td></tr>
+        <tr><td class="fw-semibold">Fecha préstamo:</td><td>{{ p.fechaPrestamo | date: 'dd/MM/yyyy HH:mm' }}</td></tr>
+        <tr><td class="fw-semibold">Devolución estimada:</td><td>{{ p.fechaDevolucionEstimada | date: 'dd/MM/yyyy HH:mm' }}</td></tr>
+        <tr><td class="fw-semibold">Devolución real:</td><td>{{ p.fechaDevolucionReal ? (p.fechaDevolucionReal | date: 'dd/MM/yyyy HH:mm') : '—' }}</td></tr>
+        <tr><td class="fw-semibold">Estado:</td><td><span class="badge-modern" [class]="clase(p.estado)">{{ p.estado }}</span></td></tr>
+        @if (p.estado === 'ACTIVO') { <tr><td class="fw-semibold">Días restantes:</td><td>{{ p.diasRestantes }}</td></tr> }
+        @if (p.estado === 'VENCIDO') { <tr><td class="fw-semibold">Días de retraso:</td><td class="text-danger fw-bold">{{ p.diasRetraso }}</td></tr> }
+      </table>
+    </div>
+  }
+  <div footer>
+    @if (detalle()?.estado === 'ACTIVO' || detalle()?.estado === 'VENCIDO') {
+      <button type="button" class="btn-modern success" (click)="devolver(detalle()!)"><i class="bi bi-arrow-return-left"></i> Devolver libro</button>
+    }
+    <button type="button" class="btn-modern primary" (click)="detalle.set(null)">Cerrar</button>
+  </div>
+</app-modal>

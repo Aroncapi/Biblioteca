@@ -1,0 +1,163 @@
+<div class="content-header">
+  <h2><i class="bi bi-people me-2"></i>Gestión de Usuarios</h2>
+  <div class="d-flex gap-3">
+    <div class="date-badge"><i class="bi bi-person-lines-fill"></i><span>Total: {{ usuarios().length }}</span></div>
+    <button class="btn-modern primary" type="button" (click)="nuevo()"><i class="bi bi-person-plus"></i> Nuevo Usuario</button>
+  </div>
+</div>
+
+<div class="row mb-4">
+  <div class="col-md-4"><div class="stat-card-modern"><div class="stat-icon"><i class="bi bi-mortarboard"></i></div><div class="stat-number">{{ alumnos().length }}</div><div class="stat-label">Alumnos</div></div></div>
+  <div class="col-md-4"><div class="stat-card-modern variant-2"><div class="stat-icon"><i class="bi bi-shield-check"></i></div><div class="stat-number">{{ admins().length }}</div><div class="stat-label">Administradores</div></div></div>
+  <div class="col-md-4"><div class="stat-card-modern variant-3"><div class="stat-icon"><i class="bi bi-people"></i></div><div class="stat-number">{{ usuarios().length }}</div><div class="stat-label">Total Usuarios</div></div></div>
+</div>
+
+<div class="mb-4">
+  <button type="button" class="nav-link-modern" [class.active]="pestana() === 'alumnos'" (click)="cambiarPestana('alumnos')">
+    <i class="bi bi-mortarboard me-2"></i>Alumnos <span class="badge-modern info ms-2">{{ alumnos().length }}</span>
+  </button>
+  <button type="button" class="nav-link-modern" [class.active]="pestana() === 'admins'" (click)="cambiarPestana('admins')">
+    <i class="bi bi-shield-check me-2"></i>Administradores <span class="badge-modern info ms-2">{{ admins().length }}</span>
+  </button>
+</div>
+
+<div class="card-modern">
+  <div class="card-body">
+    <div class="input-group mb-4">
+      <span class="input-group-text bg-white border-0"><i class="bi bi-search" style="color:#1e4a7a;"></i></span>
+      <input type="text" class="form-control border-0 py-2" [placeholder]="pestana() === 'alumnos' ? 'Buscar alumno por nombre, email...' : 'Buscar administrador...'"
+             [value]="busqueda()" (input)="buscar($any($event.target).value)">
+    </div>
+
+    @if (cargando()) {
+      <div class="empty-state"><div class="spinner-ring mb-3"></div>Cargando usuarios...</div>
+    } @else if (filtrados().length === 0) {
+      <div class="empty-state"><i class="bi bi-inbox"></i>No se encontraron usuarios</div>
+    } @else {
+      <div class="table-responsive">
+        <table class="table-modern">
+          <thead>
+            @if (pestana() === 'alumnos') {
+              <tr><th>ID</th><th>Nombre</th><th>Apellido</th><th>Email</th><th>Nivel</th><th>Grado</th><th>Sección</th><th>Acciones</th></tr>
+            } @else {
+              <tr><th>ID</th><th>Nombre</th><th>Apellido</th><th>Email</th><th>Acciones</th></tr>
+            }
+          </thead>
+          <tbody>
+            @for (u of visibles(); track u.id; let i = $index) {
+              <tr class="fade-in-up" [style.animation-delay]="(i * 0.05) + 's'">
+                <td><span class="fw-semibold">{{ u.id }}</span></td>
+                <td>{{ u.nombre }}</td>
+                <td>{{ u.apellido }}</td>
+                <td><i class="bi bi-envelope me-1 text-muted"></i>{{ u.email }}</td>
+                @if (pestana() === 'alumnos') {
+                  <td><span class="badge-modern info">{{ u.nivel }}</span></td>
+                  <td><span class="badge-modern">{{ u.grado }}°</span></td>
+                  <td><span class="badge-modern">{{ u.seccion }}</span></td>
+                }
+                <td>
+                  <div class="d-flex gap-2">
+                    <button class="btn-icon" type="button" title="Editar" (click)="editar(u)"><i class="bi bi-pencil"></i></button>
+                    <button class="btn-icon success" type="button" title="Ver detalle" (click)="ver(u)"><i class="bi bi-eye"></i></button>
+                    <button class="btn-icon danger" type="button" title="Eliminar" (click)="eliminar(u)"><i class="bi bi-trash"></i></button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      <app-paginator [total]="filtrados().length" [(pagina)]="pagina" />
+    }
+  </div>
+</div>
+
+<!-- Modal crear / editar -->
+<app-modal [abierto]="modalForm()" [titulo]="form.id ? 'Editar Usuario' : 'Nuevo Usuario'" icono="bi-person-plus" (cerrar)="modalForm.set(false)">
+  <form #f="ngForm" id="formUsuario" (ngSubmit)="guardar(f)" novalidate [class.was-validated]="enviado()">
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <label class="form-label fw-semibold">Nombre</label>
+        <input type="text" class="form-control border-0 bg-light py-3" name="nombre" [(ngModel)]="form.nombre" required minlength="2" maxlength="50" placeholder="Ej: Juan">
+        <div class="invalid-feedback">Ingrese el nombre (2 a 50 caracteres).</div>
+      </div>
+      <div class="col-md-6 mb-3">
+        <label class="form-label fw-semibold">Apellido</label>
+        <input type="text" class="form-control border-0 bg-light py-3" name="apellido" [(ngModel)]="form.apellido" required minlength="2" maxlength="50" placeholder="Ej: Pérez">
+        <div class="invalid-feedback">Ingrese el apellido (2 a 50 caracteres).</div>
+      </div>
+    </div>
+    <div class="mb-3">
+      <label class="form-label fw-semibold">Correo Electrónico</label>
+      <input type="email" class="form-control border-0 bg-light py-3" name="email" [(ngModel)]="form.email" required email placeholder="ejemplo@email.com">
+      <div class="invalid-feedback">Ingrese un correo válido.</div>
+    </div>
+    <div class="mb-3">
+      <label class="form-label fw-semibold">{{ form.id ? 'Nueva contraseña' : 'Contraseña' }}</label>
+      <input type="password" class="form-control border-0 bg-light py-3" name="password" [(ngModel)]="form.password" [required]="!form.id" minlength="6"
+             [placeholder]="form.id ? 'Dejar en blanco para no cambiar' : '••••••••'" autocomplete="new-password">
+      <div class="invalid-feedback">La contraseña debe tener al menos 6 caracteres.</div>
+    </div>
+    <div class="mb-3">
+      <label class="form-label fw-semibold">Tipo de usuario</label>
+      <select class="form-select bg-light border-0 py-3 rounded-4" name="tipo" [(ngModel)]="tipo" [disabled]="!!form.id">
+        <option value="ALUMNO">👨‍🎓 Alumno</option>
+        <option value="ADMIN">👑 Administrador</option>
+      </select>
+    </div>
+    @if (tipo === 'ALUMNO') {
+      <div class="bg-light p-4 rounded-4">
+        <h6 class="fw-semibold mb-3" style="color:#1e4a7a;"><i class="bi bi-backpack me-2"></i>Información Académica</h6>
+        <div class="row">
+          <div class="col-md-4 mb-2">
+            <label class="form-label">Nivel</label>
+            <select class="form-select" name="nivel" [(ngModel)]="form.nivel">
+              <option value="PRIMARIA">🏫 Primaria</option>
+              <option value="SECUNDARIA">📚 Secundaria</option>
+            </select>
+          </div>
+          <div class="col-md-4 mb-2">
+            <label class="form-label">Grado</label>
+            <select class="form-select" name="grado" [(ngModel)]="form.grado">
+              @for (g of grados; track g) { <option [ngValue]="g">{{ g }}°</option> }
+            </select>
+          </div>
+          <div class="col-md-4 mb-2">
+            <label class="form-label">Sección</label>
+            <select class="form-select" name="seccion" [(ngModel)]="form.seccion">
+              @for (s of secciones; track s) { <option [value]="s">{{ s }}</option> }
+            </select>
+          </div>
+        </div>
+      </div>
+    }
+  </form>
+  <div footer>
+    <button type="button" class="btn-modern outline" (click)="modalForm.set(false)">Cancelar</button>
+    <button type="submit" form="formUsuario" class="btn-modern primary"><i class="bi bi-save"></i> Guardar</button>
+  </div>
+</app-modal>
+
+<!-- Modal detalle -->
+<app-modal [abierto]="modalDetalle()" titulo="Detalle del Usuario" icono="bi-person-badge" tema="teal" (cerrar)="modalDetalle.set(false)">
+  @if (detalle(); as u) {
+    <div class="text-center mb-4">
+      <div class="user-avatar mx-auto" style="width:80px;height:80px;background:var(--gradient-2);font-size:2rem;margin-right:auto;">
+        <i class="bi bi-person"></i>
+      </div>
+    </div>
+    <div class="bg-light p-4 rounded-4">
+      <table class="table table-borderless mb-0">
+        <tr><td class="fw-semibold">ID:</td><td><span class="badge-modern info">{{ u.id }}</span></td></tr>
+        <tr><td class="fw-semibold">Nombre:</td><td class="fw-bold">{{ u.nombre }} {{ u.apellido }}</td></tr>
+        <tr><td class="fw-semibold">Email:</td><td>{{ u.email }}</td></tr>
+        <tr><td class="fw-semibold">Rol:</td><td><span class="badge-modern" [class.success]="u.rol === 'ADMIN'" [class.info]="u.rol !== 'ADMIN'">{{ u.rol }}</span></td></tr>
+        @if (u.rol === 'ALUMNO') {
+          <tr><td class="fw-semibold">Nivel:</td><td>{{ u.nivel }}</td></tr>
+          <tr><td class="fw-semibold">Grado / Sección:</td><td>{{ u.grado }}° {{ u.seccion }}</td></tr>
+        }
+      </table>
+    </div>
+  }
+  <div footer><button type="button" class="btn-modern primary" (click)="modalDetalle.set(false)">Cerrar</button></div>
+</app-modal>

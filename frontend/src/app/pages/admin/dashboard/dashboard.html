@@ -1,0 +1,133 @@
+<div class="content-header">
+  <h2><i class="bi bi-speedometer2 me-2"></i>Dashboard</h2>
+  <div class="date-badge"><i class="bi bi-calendar3"></i><span>{{ hoy }}</span></div>
+</div>
+
+@if (cargando()) {
+  <div class="empty-state"><div class="spinner-ring mb-3"></div>Cargando estadísticas...</div>
+}
+
+@if (stats(); as s) {
+  <div class="row mb-4">
+    <div class="col-md-3">
+      <div class="stat-card-modern">
+        <div class="stat-icon"><i class="bi bi-book"></i></div>
+        <div class="stat-number">{{ s.totalLibros }}</div>
+        <div class="stat-label">Total Libros</div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="stat-card-modern variant-2">
+        <div class="stat-icon"><i class="bi bi-people"></i></div>
+        <div class="stat-number">{{ s.totalAlumnos }}</div>
+        <div class="stat-label">Total Alumnos</div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="stat-card-modern variant-3">
+        <div class="stat-icon"><i class="bi bi-arrow-left-right"></i></div>
+        <div class="stat-number">{{ s.prestamosActivos }}</div>
+        <div class="stat-label">Préstamos Activos</div>
+        <div class="stat-trend">{{ s.porcentajeActivos }}% del total</div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="stat-card-modern variant-4">
+        <div class="stat-icon"><i class="bi bi-exclamation-triangle"></i></div>
+        <div class="stat-number">{{ s.prestamosVencidos }}</div>
+        <div class="stat-label">Préstamos Vencidos</div>
+        @if (s.prestamosVencidos > 0) { <div class="stat-trend text-warning">Requiere atención</div> }
+      </div>
+    </div>
+  </div>
+
+  <div class="row mb-4">
+    <div class="col-md-8">
+      <div class="card-modern">
+        <div class="card-header"><span><i class="bi bi-graph-up me-2"></i>Préstamos por Mes</span></div>
+        <div class="card-body"><div class="chart-box"><canvas #prestamosChart></canvas></div></div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card-modern">
+        <div class="card-header"><span><i class="bi bi-pie-chart me-2"></i>Distribución por Estado</span></div>
+        <div class="card-body"><div class="chart-box"><canvas #estadosChart></canvas></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-12">
+      <div class="card-modern">
+        <div class="card-header"><span><i class="bi bi-trophy me-2"></i>Top 5 Libros Más Prestados</span></div>
+        <div class="card-body">
+          @if (s.topLibros.length === 0) {
+            <div class="empty-state"><i class="bi bi-inbox"></i>Aún no hay préstamos registrados</div>
+          } @else {
+            <div class="table-responsive">
+              <table class="table-modern">
+                <thead><tr><th>#</th><th>Libro</th><th>Código</th><th>Categoría</th><th>Total Préstamos</th></tr></thead>
+                <tbody>
+                  @for (l of s.topLibros.slice(0, 5); track l.libroId; let i = $index) {
+                    <tr class="fade-in-up" [style.animation-delay]="(i * 0.1) + 's'">
+                      <td><span class="badge-modern info">{{ i + 1 }}</span></td>
+                      <td class="fw-semibold">{{ l.libroNombre }}</td>
+                      <td><code>{{ l.libroCodigo }}</code></td>
+                      <td><span class="badge-modern info">{{ l.categoria }}</span></td>
+                      <td><span class="badge-modern success">{{ l.totalPrestamos }}</span></td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mt-4">
+    <div class="col-md-12">
+      <div class="card-modern">
+        <div class="card-header"><span><i class="bi bi-clock-history me-2"></i>Últimos Préstamos</span></div>
+        <div class="card-body">
+          @if (s.ultimosPrestamos.length === 0) {
+            <div class="empty-state"><i class="bi bi-inbox"></i>No hay préstamos registrados</div>
+          } @else {
+            <div class="table-responsive">
+              <table class="table-modern">
+                <thead><tr><th>ID</th><th>Alumno</th><th>Libro</th><th>Fecha Préstamo</th><th>Fecha Devolución</th><th>Estado</th></tr></thead>
+                <tbody>
+                  @for (p of filaPagina(); track p.id) {
+                    <tr>
+                      <td><span class="fw-semibold">{{ p.id }}</span></td>
+                      <td><div class="d-flex align-items-center"><div class="user-avatar small me-2"><i class="bi bi-person"></i></div><span>{{ p.usuarioNombre }}</span></div></td>
+                      <td>{{ p.libroNombre }}</td>
+                      <td>{{ p.fechaPrestamo | date: 'dd/MM/yyyy HH:mm' }}</td>
+                      <td>{{ p.fechaDevolucionEstimada | date: 'dd/MM/yyyy HH:mm' }}</td>
+                      <td><span class="badge-modern" [class]="claseEstado(p.estado)">{{ p.estado }}</span></td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+            <app-paginator [total]="s.ultimosPrestamos.length" [tamano]="5" [(pagina)]="pagina" />
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mt-4">
+    <div class="col-12">
+      <div class="card-modern bg-transparent shadow-none">
+        <div class="card-body d-flex gap-3 flex-wrap">
+          <a routerLink="/admin/libros" class="btn-modern primary"><i class="bi bi-plus-circle"></i> Gestionar Libros</a>
+          <a routerLink="/admin/usuarios" class="btn-modern primary"><i class="bi bi-person-plus"></i> Gestionar Usuarios</a>
+          <a routerLink="/admin/prestamos" class="btn-modern primary"><i class="bi bi-arrow-left-right"></i> Ver Préstamos</a>
+          <a routerLink="/admin/reportes" class="btn-modern outline"><i class="bi bi-file-earmark-bar-graph"></i> Generar Reporte</a>
+        </div>
+      </div>
+    </div>
+  </div>
+}

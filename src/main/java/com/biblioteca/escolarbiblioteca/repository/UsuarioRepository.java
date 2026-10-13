@@ -1,0 +1,18 @@
+package com.biblioteca.escolarbiblioteca.repository;
+
+import com.biblioteca.escolarbiblioteca.model.Rol;
+import com.biblioteca.escolarbiblioteca.model.Usuario;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+import java.util.Optional;
+
+@Repository
+public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
+    Optional<Usuario> findByEmail(String email);
+    boolean existsByEmail(String email);
+    boolean existsByRol_Nombre(Rol.ERol nombre);
+    List<Usuario> findByRol(Rol rol);
+    List<Usuario> findByNivelAndGradoAndSeccion(Usuario.Nivel nivel, Integer grado, String seccion);
+}

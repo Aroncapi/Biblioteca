@@ -1,0 +1,37 @@
+<div class="app-shell">
+  <app-navbar />
+  <div class="container-fluid shell-body">
+    <div class="row">
+      <div class="col-md-3 col-lg-2 px-0">
+        <div class="sidebar-modern">
+          <div class="sidebar-header">
+            <h5>
+              <i class="bi" [class.bi-shield-lock]="auth.esAdmin()" [class.bi-mortarboard]="!auth.esAdmin()"></i>
+              {{ auth.esAdmin() ? 'Panel Admin' : 'Panel Alumno' }}
+            </h5>
+          </div>
+          <nav class="nav flex-column">
+            @for (item of menu(); track item.ruta) {
+              <a class="nav-link" [routerLink]="item.ruta" routerLinkActive="active">
+                <i class="bi" [class]="item.icono"></i>
+                <span>{{ item.texto }}</span>
+              </a>
+            }
+          </nav>
+          <div class="sidebar-header mt-4">
+            <div class="p-3 rounded-4" style="background: rgba(255,255,255,0.08)">
+              <small class="text-white-50 d-block mb-2">Biblioteca activa</small>
+              <div class="d-flex align-items-center text-white">
+                <i class="bi bi-clock me-2"></i><span>{{ hora() }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-9 col-lg-10 main-content-modern">
+        <router-outlet />
+      </div>
+    </div>
+  </div>
+  <app-footer />
+</div>

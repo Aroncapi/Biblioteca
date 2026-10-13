@@ -1,0 +1,89 @@
+<div class="content-header">
+  <h2><i class="bi bi-graph-up me-2"></i>Reportes</h2>
+  <div class="date-badge"><i class="bi bi-calendar3"></i><span>Generación y exportación</span></div>
+</div>
+
+<div class="card-modern">
+  <div class="card-header"><span><i class="bi bi-funnel me-2"></i>Rango de fechas (para el Historial)</span></div>
+  <div class="card-body">
+    <div class="row g-3 align-items-end">
+      <div class="col-md-5">
+        <label class="form-label fw-semibold">Fecha inicio</label>
+        <input type="date" class="form-control border-0 bg-light py-3 rounded-4" name="fechaInicio" [(ngModel)]="fechaInicio">
+      </div>
+      <div class="col-md-5">
+        <label class="form-label fw-semibold">Fecha fin</label>
+        <input type="date" class="form-control border-0 bg-light py-3 rounded-4" name="fechaFin" [(ngModel)]="fechaFin">
+      </div>
+      <div class="col-md-2">
+        <button class="btn-modern primary w-100 py-3" type="button" (click)="generar('historial')"><i class="bi bi-search"></i> Consultar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  @for (t of tipos; track t.id) {
+    <div class="col-md-4 mb-4">
+      <div class="card-modern h-100">
+        <div class="card-body text-center p-4">
+          <div style="width:70px;height:70px;background:linear-gradient(135deg,#1e4a7a20,#00c9b720);border-radius:20px;margin:0 auto 1rem;display:flex;align-items:center;justify-content:center;">
+            <i class="bi" [class]="t.icono" style="font-size:2rem;color:#1e4a7a;"></i>
+          </div>
+          <h5 class="card-title fw-bold mb-2">{{ t.titulo }}</h5>
+          <p class="text-muted small mb-3">{{ t.descripcion }}</p>
+          <button class="btn-modern w-100" [class]="t.clase" type="button" [disabled]="generando() !== null" (click)="generar(t.id)">
+            @if (generando() === t.id) { <span class="spinner-border spinner-border-sm"></span> Generando... }
+            @else { <i class="bi bi-file-earmark-bar-graph"></i> Generar }
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+</div>
+
+@if (reporte(); as r) {
+  <div class="row mt-2" id="resultadoReporte">
+    <div class="col-12">
+      <div class="card-modern">
+        <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+          <span><i class="bi bi-table me-2"></i>{{ r.titulo }}</span>
+          <div class="d-flex gap-2 flex-wrap no-print">
+            <button class="btn-modern outline" type="button" title="Exportar a PDF" (click)="exportar('pdf')"><i class="bi bi-file-earmark-pdf"></i> PDF</button>
+            <button class="btn-modern success" type="button" title="Exportar a Excel" (click)="exportar('xlsx')"><i class="bi bi-file-earmark-excel"></i> Excel</button>
+            <button class="btn-modern info" type="button" title="Exportar a CSV" (click)="exportar('csv')"><i class="bi bi-filetype-csv"></i> CSV</button>
+            <button class="btn-modern primary" type="button" title="Imprimir" (click)="imprimir()"><i class="bi bi-printer"></i> Imprimir</button>
+          </div>
+        </div>
+        <div class="card-body">
+          <p class="text-muted mb-3"><i class="bi bi-clock me-1"></i>Generado: {{ r.fecha }} · Registros: <strong>{{ r.total }}</strong></p>
+          @if (r.filas.length === 0) {
+            <div class="empty-state"><i class="bi bi-inbox"></i>No hay datos para este reporte</div>
+          } @else {
+            <div class="table-responsive">
+              <table class="table-modern">
+                <thead><tr>@for (c of r.columnas; track c) { <th>{{ c }}</th> }</tr></thead>
+                <tbody>
+                  @for (fila of visibles(); track $index) {
+                    <tr>
+                      @for (celda of fila; track $index) {
+                        <td>
+                          @if (r.columnas[$index] === 'Estado') {
+                            <span class="badge-modern" [class.success]="celda === 'ACTIVO'" [class.danger]="celda === 'VENCIDO'" [class.info]="celda === 'DEVUELTO'">{{ celda }}</span>
+                          } @else if (r.columnas[$index] === 'Código') {
+                            <code class="bg-light p-2 rounded-3">{{ celda }}</code>
+                          } @else { {{ celda }} }
+                        </td>
+                      }
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+            <app-paginator [total]="r.filas.length" [(pagina)]="pagina" />
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+}
