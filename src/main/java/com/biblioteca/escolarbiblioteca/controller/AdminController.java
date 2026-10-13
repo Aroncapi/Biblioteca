@@ -341,6 +341,7 @@ public class AdminController {
             stats.put("topLibros", reporteService.getTopLibrosPrestados());
 
             stats.put("ultimosPrestamos", prestamoService.getAllPrestamos().stream()
+                    .sorted(java.util.Comparator.comparing(PrestamoDTO::getFechaPrestamo).reversed())
                     .limit(10)
                     .collect(Collectors.toList()));
 
