@@ -23,9 +23,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-/**
- * Pruebas unitarias de ReporteService (datos del dashboard y reportes gráficos).
- */
 @ExtendWith(MockitoExtension.class)
 class ReporteServiceTest {
 
@@ -83,7 +80,7 @@ class ReporteServiceTest {
         Map<String, Object> stats = reporteService.getDashboardStats();
 
         assertEquals(10L, stats.get("totalLibros"));
-        assertEquals(1L, stats.get("totalAlumnos")); // solo cuenta rol ALUMNO
+        assertEquals(1L, stats.get("totalAlumnos"));
         assertEquals(1, stats.get("prestamosActivos"));
         assertEquals(2, stats.get("prestamosVencidos"));
         assertEquals(0L, stats.get("prestamosDevueltos"));
@@ -93,11 +90,11 @@ class ReporteServiceTest {
     @Test
     void topLibrosPrestados_limitaA5YEnriqueceConDatosDelLibro() {
         Usuario alumno = usuario(1L, "Ana", Rol.ERol.ALUMNO);
-        // 6 filas (libro_id, total) — solo deben quedar 5
+
         when(prestamoRepository.findTopLibrosPrestados()).thenReturn(List.of(
                 new Object[]{1L, 10L}, new Object[]{2L, 8L}, new Object[]{3L, 6L},
                 new Object[]{4L, 4L}, new Object[]{5L, 2L}, new Object[]{6L, 1L}));
-        // Solo se consultan los 5 primeros (el .limit(5) descarta el 6to)
+
         for (long id = 1; id <= 5; id++) {
             when(libroRepository.findById(id)).thenReturn(Optional.of(libro(id, "Novela")));
         }
@@ -114,7 +111,7 @@ class ReporteServiceTest {
     void prestamosPorMes_rellenaMesesSinDatosConCero() {
         int anio = YearMonth.now().getYear();
         int mes = YearMonth.now().getMonthValue();
-        // Solo el mes actual tiene datos
+
         when(prestamoRepository.contarPrestamosPorMes(any()))
                 .thenReturn(List.<Object[]>of(new Object[]{anio, mes, 4L}));
 
@@ -127,8 +124,8 @@ class ReporteServiceTest {
 
         assertEquals(6, labels.size());
         assertEquals(6, data.size());
-        assertEquals(4L, data.get(5));       // último mes = mes actual
-        assertEquals(0L, data.get(0));       // primer mes sin datos = 0
+        assertEquals(4L, data.get(5));
+        assertEquals(0L, data.get(0));
     }
 
     @Test

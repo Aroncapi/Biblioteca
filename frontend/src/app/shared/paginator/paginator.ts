@@ -1,6 +1,5 @@
 import { Component, computed, input, model } from '@angular/core';
 
-/** Paginación simple (reemplaza a la paginación de DataTables). */
 @Component({
   selector: 'app-paginator',
   template: `

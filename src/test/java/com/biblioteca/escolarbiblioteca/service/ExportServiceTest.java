@@ -7,10 +7,6 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * Pruebas de las exportaciones de reportes (competencia: reportes exportables
- * a diferentes formatos).
- */
 class ExportServiceTest {
 
     private final ExportService exportService = new ExportService();
@@ -35,7 +31,7 @@ class ExportServiceTest {
         byte[] xlsx = exportService.exportarExcel("Reporte", COLUMNAS, FILAS);
 
         assertTrue(xlsx.length > 0, "El Excel no debe estar vacío");
-        // Los .xlsx son archivos ZIP: comienzan con las firmas 'P' 'K'
+
         assertEquals('P', (char) xlsx[0]);
         assertEquals('K', (char) xlsx[1]);
     }
@@ -55,7 +51,6 @@ class ExportServiceTest {
     void exportarCsv_contraeBomDeUtf8ParaExcel() {
         byte[] csv = exportService.exportarCsv(COLUMNAS, FILAS);
 
-        // BOM UTF-8: EF BB BF
         assertEquals((byte) 0xEF, csv[0]);
         assertEquals((byte) 0xBB, csv[1]);
         assertEquals((byte) 0xBF, csv[2]);

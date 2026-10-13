@@ -1,11 +1,3 @@
--- =====================================================================
--- V1__init.sql — Migración inicial del esquema de la biblioteca escolar
--- Generado con: mysqldump -uroot -pmysql --no-data biblioteca_escolar
--- OJO: este script crea SOLO las tablas. Los datos iniciales
--- (roles, admin, alumnos y libros) los crea DataInitializer.java.
--- =====================================================================
-
--- Tabla: roles
 CREATE TABLE `roles` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `nombre` enum('ADMIN','ALUMNO') NOT NULL,
@@ -13,7 +5,6 @@ CREATE TABLE `roles` (
   UNIQUE KEY `UK_ldv0v52e0udsh2h1rs0r0gw1n` (`nombre`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Tabla: usuarios
 CREATE TABLE `usuarios` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `apellido` varchar(255) NOT NULL,
@@ -30,7 +21,6 @@ CREATE TABLE `usuarios` (
   CONSTRAINT `FKqf5elo4jcq7qrt83oi0qmenjo` FOREIGN KEY (`rol_id`) REFERENCES `roles` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Tabla: libros
 CREATE TABLE `libros` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `categoria` varchar(255) NOT NULL,
@@ -47,7 +37,6 @@ CREATE TABLE `libros` (
   UNIQUE KEY `UK_7792ap603is11v01wkbpw2dbo` (`codigo_libro`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Tabla: prestamos
 CREATE TABLE `prestamos` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `estado` enum('ACTIVO','DEVUELTO','VENCIDO') NOT NULL,

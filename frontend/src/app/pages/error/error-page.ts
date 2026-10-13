@@ -8,7 +8,6 @@ const INFO: Record<number, { titulo: string; texto: string; icono: string; color
   500: { titulo: 'Error Interno del Servidor', texto: 'Ha ocurrido un error inesperado. Intenta de nuevo en unos minutos.', icono: 'bi-exclamation-octagon-fill', color: '#ff4757' }
 };
 
-/** Reemplaza error/403.html, error/404.html y error/500.html. */
 @Component({
   selector: 'app-error-page',
   imports: [RouterLink],

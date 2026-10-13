@@ -94,7 +94,6 @@ export class Libros {
 
   puedeEliminar(l: Libro) { return l.stockDisponible === l.stockTotal; }
 
-  /** Exporta el listado visible a CSV (con BOM para que Excel respete los tildes). */
   exportarCsv() {
     const filas = [['ID', 'Código', 'Nombre', 'Categoría', 'Stock Total', 'Stock Disponible']]
       .concat(this.filtrados().map(l => [String(l.id), l.codigoLibro, l.nombre, l.categoria, String(l.stockTotal), String(l.stockDisponible)]));

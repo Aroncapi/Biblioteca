@@ -37,7 +37,6 @@ export class Reportes {
     return r ? r.filas.slice((this.pagina() - 1) * 10, this.pagina() * 10) : [];
   });
 
-  /** Parámetros que se envían al backend (para el JSON y para la exportación). */
   private params(tipo: TipoReporte): Record<string, string | number> | null {
     if (tipo === 'historial') {
       if (!this.fechaInicio || !this.fechaFin) { this.notify.aviso('⚠️ Por favor seleccione ambas fechas'); return null; }
@@ -89,7 +88,6 @@ export class Reportes {
     window.print();
   }
 
-  // ----------------- helpers -----------------
   private fecha(iso: string | null | undefined) {
     if (!iso) return '—';
     const d = new Date(iso);

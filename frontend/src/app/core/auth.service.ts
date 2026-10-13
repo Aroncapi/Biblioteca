@@ -13,11 +13,6 @@ interface Sesion {
   rol: Rol;
 }
 
-/**
- * Autenticación con JWT (reemplaza al formLogin + sesión JSESSIONID de Thymeleaf).
- * - "Recordarme" activo  -> localStorage (persiste al cerrar el navegador)
- * - "Recordarme" inactivo -> sessionStorage (se borra al cerrar la pestaña)
- */
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private http = inject(HttpClient);
@@ -37,7 +32,6 @@ export class AuthService {
   });
   readonly token = computed(() => this.sesion()?.token ?? null);
 
-  /** Ruta "home" según el rol (equivale a "/" y "/dashboard-redirect" de Thymeleaf). */
   rutaInicio(): string {
     const rol = this.rol();
     if (rol === 'ADMIN') return '/admin/dashboard';

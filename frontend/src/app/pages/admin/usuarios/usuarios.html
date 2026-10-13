@@ -72,7 +72,6 @@
   </div>
 </div>
 
-<!-- Modal crear / editar -->
 <app-modal [abierto]="modalForm()" [titulo]="form.id ? 'Editar Usuario' : 'Nuevo Usuario'" icono="bi-person-plus" (cerrar)="modalForm.set(false)">
   <form #f="ngForm" id="formUsuario" (ngSubmit)="guardar(f)" novalidate [class.was-validated]="enviado()">
     <div class="row">
@@ -138,7 +137,6 @@
   </div>
 </app-modal>
 
-<!-- Modal detalle -->
 <app-modal [abierto]="modalDetalle()" titulo="Detalle del Usuario" icono="bi-person-badge" tema="teal" (cerrar)="modalDetalle.set(false)">
   @if (detalle(); as u) {
     <div class="text-center mb-4">

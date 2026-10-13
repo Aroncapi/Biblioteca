@@ -35,7 +35,7 @@ export class Dashboard implements AfterViewInit, OnDestroy {
       next: ({ stats, mes }) => {
         this.stats.set(stats);
         this.cargando.set(false);
-        // esperar a que Angular pinte los <canvas> (están dentro del @if)
+
         setTimeout(() => this.dibujar(stats, mes));
       },
       error: err => { this.cargando.set(false); this.notify.error(this.notify.mensajeError(err, 'No se pudo cargar el dashboard')); }

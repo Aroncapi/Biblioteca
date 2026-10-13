@@ -27,9 +27,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-/**
- * Pruebas funcionales del API de perfil de usuario (/api/usuarios/**).
- */
 @WebMvcTest(controllers = UsuarioController.class)
 @AutoConfigureMockMvc
 @ContextConfiguration(classes = {UsuarioController.class, SecurityConfig.class,

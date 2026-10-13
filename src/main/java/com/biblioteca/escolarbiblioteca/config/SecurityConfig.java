@@ -37,26 +37,21 @@ public class SecurityConfig {
         http
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .csrf(csrf -> csrf.disable())
-            // API REST sin estado: la autenticación viaja en el header Authorization (JWT)
+
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            // Sin JWT válido -> 401 (ya no se redirige a /login como hacía Thymeleaf)
+
             .exceptionHandling(ex -> ex.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
             .authorizeHttpRequests(auth -> auth
-                // Login y registro (API)
+
                 .requestMatchers("/api/auth/**", "/health").permitAll()
 
-                // Documentación OpenAPI (Swagger)
                 .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
 
-                // Endpoints protegidos por rol
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 .requestMatchers("/api/alumno/**").hasRole("ALUMNO")
 
-                // Endpoints compartidos (cualquier usuario autenticado)
                 .requestMatchers("/api/**").authenticated()
 
-                // Todo lo que no es API es la aplicación Angular (index.html, js, css y rutas del SPA).
-                // Las pantallas las protegen los guards de Angular y, sobre todo, los /api/** de arriba.
                 .anyRequest().permitAll()
             )
             .userDetailsService(userDetailsService);
@@ -79,7 +74,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        // Origen del frontend Angular en desarrollo
+
         configuration.setAllowedOrigins(List.of("http://localhost:4200"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept"));

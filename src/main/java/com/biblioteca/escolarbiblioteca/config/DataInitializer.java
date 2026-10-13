@@ -124,7 +124,6 @@ public class DataInitializer implements CommandLineRunner {
                     .stockDisponible(3)
                     .build()
             );
-            
 
             libroRepository.saveAll(libros);
         }

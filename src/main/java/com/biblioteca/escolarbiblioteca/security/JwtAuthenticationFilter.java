@@ -26,13 +26,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtUtils jwtUtils;
     private final UserDetailsService userDetailsService;
-    
-    // Rutas exactas que no deben ser procesadas por JWT (vistas web)
+
     private final List<String> rutasExcluidas = Arrays.asList(
         "/", "/login", "/registro"
     );
 
-    // Prefijos de rutas que no deben ser procesadas por JWT (vistas y recursos estáticos)
     private final List<String> prefijosExcluidos = Arrays.asList(
         "/admin/", "/alumno/", "/css/", "/js/", "/images/"
     );
@@ -40,16 +38,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getServletPath();
-        // No aplicar el filtro JWT a vistas web ni a recursos estáticos.
-        // IMPORTANTE: la raíz "/" se compara de forma exacta; si se usara
-        // startsWith, TODAS las rutas (/api/...) quedarían excluidas.
+
         return rutasExcluidas.contains(path)
                 || prefijosExcluidos.stream().anyMatch(path::startsWith);
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, 
-                                   HttpServletResponse response, 
+    protected void doFilterInternal(HttpServletRequest request,
+                                   HttpServletResponse response,
                                    FilterChain filterChain)
             throws ServletException, IOException {
         try {

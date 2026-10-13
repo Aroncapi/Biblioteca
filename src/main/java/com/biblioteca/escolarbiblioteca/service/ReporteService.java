@@ -35,44 +35,38 @@ public class ReporteService {
 
     public Map<String, Object> getDashboardStats() {
         Map<String, Object> stats = new HashMap<>();
-        
-        // Totales
+
         stats.put("totalLibros", libroRepository.count());
-        
-        // Obtener el rol ALUMNO de manera segura
+
         long totalAlumnos = usuarioRepository.findAll().stream()
                 .filter(u -> u.getRol() != null && u.getRol().getNombre() == Rol.ERol.ALUMNO)
                 .count();
         stats.put("totalAlumnos", totalAlumnos);
-        
-        // Préstamos activos
+
         List<Prestamo> prestamosActivos = prestamoRepository.findByEstado(Prestamo.EstadoPrestamo.ACTIVO);
         stats.put("prestamosActivos", prestamosActivos.size());
-        
-        // Préstamos vencidos
+
         List<Prestamo> prestamosVencidos = prestamoRepository.findByEstado(Prestamo.EstadoPrestamo.VENCIDO);
         stats.put("prestamosVencidos", prestamosVencidos.size());
-        
-        // Préstamos devueltos
+
         long prestamosDevueltos = prestamoRepository.findByEstado(Prestamo.EstadoPrestamo.DEVUELTO).size();
         stats.put("prestamosDevueltos", prestamosDevueltos);
-        
-        // Top 5 libros más prestados
+
         stats.put("topLibros", getTopLibrosPrestados());
-        
+
         return stats;
     }
 
     public List<Map<String, Object>> getTopLibrosPrestados() {
         List<Object[]> results = prestamoRepository.findTopLibrosPrestados();
-        
+
         return results.stream()
                 .limit(5)
                 .map(result -> {
                     Map<String, Object> item = new HashMap<>();
                     Long libroId = (Long) result[0];
                     Long total = (Long) result[1];
-                    
+
                     Libro libro = libroRepository.findById(libroId).orElse(null);
                     if (libro != null) {
                         item.put("libroId", libroId);
@@ -101,18 +95,14 @@ public class ReporteService {
     public List<PrestamoDTO> getPrestamosPorRangoFechas(String fechaInicioStr, String fechaFinStr) {
         LocalDateTime fechaInicio = LocalDateTime.parse(fechaInicioStr + "T00:00:00");
         LocalDateTime fechaFin = LocalDateTime.parse(fechaFinStr + "T23:59:59");
-        
+
         return prestamoRepository.findAll().stream()
-                .filter(p -> !p.getFechaPrestamo().isBefore(fechaInicio) && 
+                .filter(p -> !p.getFechaPrestamo().isBefore(fechaInicio) &&
                             !p.getFechaPrestamo().isAfter(fechaFin))
                 .map(PrestamoDTO::new)
                 .collect(Collectors.toList());
     }
 
-    /**
-     * Cantidad de préstamos registrados por mes en los últimos N meses.
-     * Devuelve labels (nombres de mes) y data (conteos), rellenando con 0 los meses sin datos.
-     */
     public Map<String, Object> getPrestamosPorMes(int meses) {
         int limite = Math.max(1, Math.min(meses, 24));
         YearMonth actual = YearMonth.now();
@@ -141,9 +131,6 @@ public class ReporteService {
         return resultado;
     }
 
-    /**
-     * Usuarios con más préstamos, ordenados de mayor a menor.
-     */
     public List<Map<String, Object>> getTopUsuariosActivos(int limite) {
         Map<Long, Map<String, Object>> porUsuario = new java.util.LinkedHashMap<>();
 
@@ -167,9 +154,6 @@ public class ReporteService {
                 .collect(Collectors.toList());
     }
 
-    /**
-     * Estadísticas de libros y préstamos agrupados por categoría.
-     */
     public Map<String, Object> getEstadisticasCategorias() {
         Map<String, Long> librosPorCategoria = libroRepository.findAll().stream()
                 .collect(Collectors.groupingBy(

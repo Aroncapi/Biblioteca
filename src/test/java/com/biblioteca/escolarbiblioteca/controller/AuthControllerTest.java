@@ -32,9 +32,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-/**
- * Pruebas funcionales del API de autenticación (login, registro y check-email).
- */
 @WebMvcTest(controllers = AuthController.class)
 @AutoConfigureMockMvc
 @ContextConfiguration(classes = {AuthController.class, SecurityConfig.class,

@@ -11,7 +11,7 @@ public class JwtResponseDTO {
     private Long id;
     private String email;
     private String rol;
-    
+
     public JwtResponseDTO(String token, Long id, String email, String rol) {
         this.token = token;
         this.id = id;

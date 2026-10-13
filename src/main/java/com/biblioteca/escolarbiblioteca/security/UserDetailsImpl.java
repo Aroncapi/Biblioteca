@@ -13,7 +13,7 @@ import java.util.Collections;
 @Data
 @AllArgsConstructor
 public class UserDetailsImpl implements UserDetails {
-    
+
     private Long id;
     private String nombre;
     private String apellido;
@@ -21,10 +21,10 @@ public class UserDetailsImpl implements UserDetails {
     private String password;
     private Collection<? extends GrantedAuthority> authorities;
     private Usuario usuario;
-    
+
     public static UserDetailsImpl build(Usuario usuario) {
         GrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + usuario.getRol().getNombre().name());
-        
+
         return new UserDetailsImpl(
             usuario.getId(),
             usuario.getNombre(),
@@ -35,7 +35,7 @@ public class UserDetailsImpl implements UserDetails {
             usuario
         );
     }
-    
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return authorities;

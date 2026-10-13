@@ -6,7 +6,6 @@ frontend/dist
 .env
 .env.*
 !*.example
-NOTA-SESION.md
 work
 outputs
 src/main/resources/static

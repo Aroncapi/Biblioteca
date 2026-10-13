@@ -2,16 +2,6 @@ import { Routes } from '@angular/router';
 import { adminGuard, alumnoGuard, guestGuard, inicioGuard } from './core/guards';
 import { Shell } from './shared/shell/shell';
 
-/**
- * Mapa Thymeleaf -> Angular
- *  auth/login.html          -> /login
- *  auth/register.html       -> /registro
- *  admin/*.html             -> /admin/...
- *  alumno/catalogo.html     -> /catalogo
- *  alumno/mis-prestamos     -> /mis-prestamos
- *  alumno/perfil.html       -> /perfil
- *  error/403|404|500.html   -> /403, /404, /500
- */
 export const routes: Routes = [
   { path: '', pathMatch: 'full', canActivate: [inicioGuard], children: [] },
 

@@ -52,7 +52,7 @@ public class LibroService {
                 .categoria(libroDTO.getCategoria())
                 .codigoLibro(libroDTO.getCodigoLibro())
                 .stockTotal(libroDTO.getStockTotal())
-                .stockDisponible(libroDTO.getStockTotal()) // Inicialmente igual al stock total
+                .stockDisponible(libroDTO.getStockTotal())
                 .build();
 
         Libro savedLibro = libroRepository.save(libro);
@@ -63,28 +63,25 @@ public class LibroService {
     public LibroDTO update(Long id, LibroDTO libroDTO) {
         Libro libro = libroRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Libro no encontrado con id: " + id));
-        
+
         libro.setNombre(libroDTO.getNombre());
         libro.setCategoria(libroDTO.getCategoria());
-        
-        // Si el código cambia, verificar que no exista
+
         if (!libro.getCodigoLibro().equals(libroDTO.getCodigoLibro())) {
             if (libroRepository.existsByCodigoLibro(libroDTO.getCodigoLibro())) {
                 throw new RuntimeException("Ya existe un libro con el código: " + libroDTO.getCodigoLibro());
             }
             libro.setCodigoLibro(libroDTO.getCodigoLibro());
         }
-        
-        // Actualizar stock
+
         int diferencia = libroDTO.getStockTotal() - libro.getStockTotal();
         libro.setStockTotal(libroDTO.getStockTotal());
         libro.setStockDisponible(libro.getStockDisponible() + diferencia);
-        
-        // Asegurar que el stock disponible no sea negativo
+
         if (libro.getStockDisponible() < 0) {
             throw new RuntimeException("No se puede reducir el stock por debajo de los libros prestados actualmente");
         }
-        
+
         Libro updatedLibro = libroRepository.save(libro);
         return new LibroDTO(updatedLibro);
     }
@@ -93,12 +90,11 @@ public class LibroService {
     public void deleteById(Long id) {
         Libro libro = libroRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Libro no encontrado con id: " + id));
-        
-        // Verificar que no tenga préstamos activos
+
         if (libro.getStockDisponible() < libro.getStockTotal()) {
             throw new RuntimeException("No se puede eliminar el libro porque tiene préstamos activos");
         }
-        
+
         libroRepository.delete(libro);
     }
 

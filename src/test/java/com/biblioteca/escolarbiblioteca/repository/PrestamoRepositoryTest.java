@@ -18,10 +18,6 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * Pruebas de integración de PrestamoRepository sobre H2 en memoria.
- * Incluye queries JPQL de reportes y actualización masiva de vencidos.
- */
 @DataJpaTest
 @Import(JpaAuditingConfig.class)
 class PrestamoRepositoryTest {
@@ -73,14 +69,12 @@ class PrestamoRepositoryTest {
                 .codigoLibro("LIB-002").stockTotal(2).stockDisponible(2)
                 .build());
 
-        // prestamo1: Ana, activo, pendiente
         prestamoRepository.save(Prestamo.builder()
                 .usuario(ana).libro(quijote)
                 .fechaDevolucionEstimada(LocalDateTime.now().plusDays(7))
                 .estado(Prestamo.EstadoPrestamo.ACTIVO)
                 .build());
 
-        // prestamo2: Luis, ya devuelto
         prestamoRepository.save(Prestamo.builder()
                 .usuario(luis).libro(quijote)
                 .fechaDevolucionEstimada(LocalDateTime.now().minusDays(1))
@@ -88,7 +82,6 @@ class PrestamoRepositoryTest {
                 .estado(Prestamo.EstadoPrestamo.DEVUELTO)
                 .build());
 
-        // prestamo3: Ana, activo pero YA vencido
         prestamoRepository.save(Prestamo.builder()
                 .usuario(ana).libro(popeye)
                 .fechaDevolucionEstimada(LocalDateTime.now().minusDays(2))

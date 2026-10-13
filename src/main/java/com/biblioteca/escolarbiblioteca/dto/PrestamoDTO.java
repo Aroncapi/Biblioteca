@@ -8,7 +8,7 @@ import java.time.format.DateTimeFormatter;
 
 @Data
 public class PrestamoDTO {
-    
+
     private Long id;
     private Long usuarioId;
     private String usuarioNombre;
@@ -20,13 +20,12 @@ public class PrestamoDTO {
     private LocalDateTime fechaDevolucionEstimada;
     private LocalDateTime fechaDevolucionReal;
     private String estado;
-    
-    // Nuevos campos
+
     private Integer diasRestantes;
     private Integer diasRetraso;
-    
+
     public PrestamoDTO() {}
-    
+
     public PrestamoDTO(Prestamo prestamo) {
         this.id = prestamo.getId();
         this.usuarioId = prestamo.getUsuario().getId();
@@ -40,19 +39,19 @@ public class PrestamoDTO {
         this.fechaDevolucionReal = prestamo.getFechaDevolucionReal();
         this.estado = prestamo.getEstado().name();
     }
-    
+
     public String getFechaPrestamoFormatted() {
-        return fechaPrestamo != null ? 
+        return fechaPrestamo != null ?
             fechaPrestamo.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")) : "";
     }
-    
+
     public String getFechaDevolucionEstimadaFormatted() {
-        return fechaDevolucionEstimada != null ? 
+        return fechaDevolucionEstimada != null ?
             fechaDevolucionEstimada.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")) : "";
     }
-    
+
     public String getFechaDevolucionRealFormatted() {
-        return fechaDevolucionReal != null ? 
+        return fechaDevolucionReal != null ?
             fechaDevolucionReal.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")) : "";
     }
 }

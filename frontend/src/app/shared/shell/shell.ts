@@ -6,7 +6,6 @@ import { Footer } from '../footer/footer';
 
 interface ItemMenu { ruta: string; texto: string; icono: string; }
 
-/** Layout principal: navbar + sidebar (según rol) + contenido + footer. */
 @Component({
   selector: 'app-shell',
   imports: [RouterOutlet, RouterLink, RouterLinkActive, Navbar, Footer],
@@ -34,7 +33,7 @@ export class Shell implements OnInit, OnDestroy {
   menu() { return this.auth.esAdmin() ? this.menuAdmin : this.menuAlumno; }
 
   ngOnInit() {
-    // Si recargan la página, recuperar el nombre del usuario para el navbar
+
     if (this.auth.estaLogueado() && !this.auth.perfil()) this.auth.cargarPerfil().subscribe();
     this.timer = setInterval(() => this.hora.set(this.formatoHora()), 30000);
   }

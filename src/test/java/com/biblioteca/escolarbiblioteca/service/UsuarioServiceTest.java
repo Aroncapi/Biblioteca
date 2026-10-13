@@ -16,9 +16,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-/**
- * Pruebas unitarias de UsuarioService.
- */
 @ExtendWith(MockitoExtension.class)
 class UsuarioServiceTest {
 
@@ -106,7 +103,7 @@ class UsuarioServiceTest {
                 .nombre("Ana")
                 .apellido("Torres")
                 .email("ana@biblioteca.com")
-                .password("") // vacía: no debe reemplazar
+                .password("")
                 .build();
 
         Usuario actualizado = usuarioService.update(1L, cambios);
@@ -131,7 +128,7 @@ class UsuarioServiceTest {
                 .nombre("Admin Editado")
                 .apellido("Sistema")
                 .email("admin@biblioteca.com")
-                .nivel(Usuario.Nivel.SECUNDARIA) // no debe copiarse a un ADMIN
+                .nivel(Usuario.Nivel.SECUNDARIA)
                 .grado(2)
                 .seccion("Z")
                 .build();

@@ -33,9 +33,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-/**
- * Pruebas funcionales de exportación de reportes (PDF/Excel/CSV).
- */
 @WebMvcTest(controllers = ReporteExportController.class)
 @AutoConfigureMockMvc
 @ContextConfiguration(classes = {ReporteExportController.class, SecurityConfig.class,

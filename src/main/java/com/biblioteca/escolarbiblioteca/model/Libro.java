@@ -21,30 +21,29 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Libro {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
+
     @Column(nullable = false)
     private String nombre;
-    
+
     @Column(nullable = false)
     private String categoria;
-    
+
     @Column(unique = true, nullable = false)
     private String codigoLibro;
-    
+
     @Column(nullable = false)
     private Integer stockTotal;
-    
+
     @Column(nullable = false)
     private Integer stockDisponible;
-    
-    @Version
-    private Integer version; // Para control de concurrencia
 
-    // Auditoría JPA (@EnableJpaAuditing + AuditorAware)
+    @Version
+    private Integer version;
+
     @CreatedBy
     @Column(name = "created_by", updatable = false)
     private String createdBy;

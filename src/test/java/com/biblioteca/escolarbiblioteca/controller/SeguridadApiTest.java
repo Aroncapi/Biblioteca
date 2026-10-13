@@ -31,10 +31,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 
-/**
- * Pruebas de seguridad: verificación de roles en los endpoints.
- * Requisito matriz CIBERTEC 2: seguridad de la información.
- */
 @WebMvcTest(controllers = {AdminController.class, AlumnoController.class})
 @AutoConfigureMockMvc
 @ContextConfiguration(classes = {AdminController.class, AlumnoController.class,
@@ -72,8 +68,6 @@ class SeguridadApiTest {
     @MockBean
     private JwtUtils jwtUtils;
 
-    // ---------- /api/admin/** ----------
-
     @Test
     void adminHealth_sinSesion_noDevuelve200() throws Exception {
         mockMvc.perform(get("/api/admin/health"))
@@ -108,8 +102,6 @@ class SeguridadApiTest {
                 .andExpect(status().isOk());
     }
 
-    // ---------- /api/alumno/** ----------
-
     @Test
     @WithMockUser(username = "admin@biblioteca.com", roles = "ADMIN")
     void misPrestamos_comoAdmin_devuelve403() throws Exception {
@@ -141,8 +133,6 @@ class SeguridadApiTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray());
     }
-
-    // ---------- Ruta inexistente ----------
 
     @Test
     @WithMockUser(username = "admin@biblioteca.com", roles = "ADMIN")

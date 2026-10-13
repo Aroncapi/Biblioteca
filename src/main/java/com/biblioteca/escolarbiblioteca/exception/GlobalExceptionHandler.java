@@ -59,7 +59,6 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
     }
 
-    // @PreAuthorize lanzado dentro de DispatcherServlet debe devolver 403, no 400
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ErrorResponse> handleAccessDeniedException(AccessDeniedException ex) {
         ErrorResponse errorResponse = new ErrorResponse(
@@ -70,7 +69,6 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
     }
 
-    // URL inexistente (typo, %20 final, /api/login sin /auth) → 404, no 500
     @ExceptionHandler(NoResourceFoundException.class)
     public ResponseEntity<ErrorResponse> handleNoResourceFound(NoResourceFoundException ex) {
         ErrorResponse errorResponse = new ErrorResponse(
@@ -100,26 +98,24 @@ public class GlobalExceptionHandler {
         );
         return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }
-    
-    // Clase interna para estructura de error
+
     public static class ErrorResponse {
         private int status;
         private String message;
         private LocalDateTime timestamp;
-        
+
         public ErrorResponse(int status, String message, LocalDateTime timestamp) {
             this.status = status;
             this.message = message;
             this.timestamp = timestamp;
         }
-        
-        // Getters y setters
+
         public int getStatus() { return status; }
         public void setStatus(int status) { this.status = status; }
-        
+
         public String getMessage() { return message; }
         public void setMessage(String message) { this.message = message; }
-        
+
         public LocalDateTime getTimestamp() { return timestamp; }
         public void setTimestamp(LocalDateTime timestamp) { this.timestamp = timestamp; }
     }

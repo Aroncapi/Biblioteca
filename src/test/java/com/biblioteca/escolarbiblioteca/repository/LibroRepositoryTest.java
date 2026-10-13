@@ -14,10 +14,6 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * Pruebas de integración de LibroRepository sobre H2 en memoria.
- * Verificación de queries derivadas, JPQL y control de concurrencia optimista.
- */
 @DataJpaTest
 @Import(JpaAuditingConfig.class)
 class LibroRepositoryTest {
@@ -106,14 +102,12 @@ class LibroRepositoryTest {
     void guardarConVersionObsoleta_lanzaConflictoOptimista() {
         Libro libro = libroRepository.save(nuevoLibro("LIB-011", "Version 0", "Novela"));
         Long id = libro.getId();
-        em.detach(libro); // copia "vieja" con versión 0
+        em.detach(libro);
 
-        // otra "sesión" edita el libro primero -> versión pasa a 1
         Libro otro = libroRepository.findById(id).orElseThrow();
         otro.setNombre("Editado por otra sesión");
         libroRepository.saveAndFlush(otro);
 
-        // la copia obsoleta intenta guardarse -> conflicto optimista
         libro.setNombre("Edición conflictiva");
         assertThrows(OptimisticLockingFailureException.class, () -> {
             libroRepository.save(libro);

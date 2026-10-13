@@ -26,9 +26,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-/**
- * Pruebas funcionales del catálogo de libros + control de acceso por roles.
- */
 @WebMvcTest(controllers = LibroController.class)
 @AutoConfigureMockMvc
 @ContextConfiguration(classes = {LibroController.class, SecurityConfig.class,

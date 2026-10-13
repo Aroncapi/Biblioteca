@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 public class PrestamoService {
 
     private final PrestamoRepository prestamoRepository;
-    private final LibroRepository libroRepository;  // Agregar esto
+    private final LibroRepository libroRepository;
     private final UsuarioService usuarioService;
 
     public List<PrestamoDTO> getAllPrestamos() {
@@ -35,7 +35,7 @@ public class PrestamoService {
                     PrestamoDTO dto = new PrestamoDTO(prestamo);
                     if (prestamo.getEstado() == Prestamo.EstadoPrestamo.ACTIVO) {
                         long diasRestantes = ChronoUnit.DAYS.between(
-                            LocalDateTime.now(), 
+                            LocalDateTime.now(),
                             prestamo.getFechaDevolucionEstimada()
                         );
                         dto.setDiasRestantes((int) diasRestantes);
@@ -53,19 +53,16 @@ public class PrestamoService {
 
     @Transactional
     public PrestamoDTO solicitarPrestamo(Usuario usuario, Long libroId) {
-        // Validar reglas de negocio
+
         validarReglasPrestamo(usuario);
-        
-        // CORREGIDO: Obtener la entidad Libro directamente del repositorio
+
         Libro libro = libroRepository.findById(libroId)
                 .orElseThrow(() -> new ResourceNotFoundException("Libro no encontrado con id: " + libroId));
-        
-        // Verificar disponibilidad
+
         if (libro.getStockDisponible() <= 0) {
             throw new RuntimeException("El libro no está disponible para préstamo");
         }
-        
-        // Crear préstamo
+
         Prestamo prestamo = Prestamo.builder()
                 .usuario(usuario)
                 .libro(libro)
@@ -73,32 +70,29 @@ public class PrestamoService {
                 .fechaDevolucionEstimada(LocalDateTime.now().plusDays(7))
                 .estado(Prestamo.EstadoPrestamo.ACTIVO)
                 .build();
-        
+
         prestamoRepository.save(prestamo);
-        
-        // Actualizar stock directamente
+
         libro.setStockDisponible(libro.getStockDisponible() - 1);
         libroRepository.save(libro);
-        
+
         log.info("Préstamo creado: {} - {} - {}", usuario.getEmail(), libro.getNombre(), prestamo.getId());
-        
+
         return new PrestamoDTO(prestamo);
     }
 
     private void validarReglasPrestamo(Usuario usuario) {
-        // Verificar si el usuario es alumno
+
         if (usuario.getRol().getNombre() != Rol.ERol.ALUMNO) {
             throw new RuntimeException("Solo los alumnos pueden solicitar préstamos");
         }
-        
-        // Verificar si tiene préstamos vencidos
+
         long prestamosVencidos = prestamoRepository.countByUsuarioAndEstado(
                 usuario, Prestamo.EstadoPrestamo.VENCIDO);
         if (prestamosVencidos > 0) {
             throw new RuntimeException("No puede solicitar préstamos porque tiene préstamos vencidos");
         }
-        
-        // Verificar límite de préstamos activos (máximo 3)
+
         long prestamosActivos = prestamoRepository.countByUsuarioAndEstado(
                 usuario, Prestamo.EstadoPrestamo.ACTIVO);
         if (prestamosActivos >= 3) {
@@ -110,29 +104,25 @@ public class PrestamoService {
     public PrestamoDTO devolverLibro(Usuario usuario, Long prestamoId) {
         Prestamo prestamo = prestamoRepository.findById(prestamoId)
                 .orElseThrow(() -> new ResourceNotFoundException("Préstamo no encontrado con id: " + prestamoId));
-        
-        // Verificar que el préstamo pertenezca al usuario
+
         if (!prestamo.getUsuario().getId().equals(usuario.getId())) {
             throw new RuntimeException("No puede devolver un préstamo que no le pertenece");
         }
-        
-        // Verificar que el préstamo esté activo
+
         if (prestamo.getEstado() != Prestamo.EstadoPrestamo.ACTIVO && prestamo.getEstado() != Prestamo.EstadoPrestamo.VENCIDO) {
             throw new RuntimeException("El préstamo no está activo");
         }
-        
-        // Actualizar préstamo
+
         prestamo.setFechaDevolucionReal(LocalDateTime.now());
         prestamo.setEstado(Prestamo.EstadoPrestamo.DEVUELTO);
         prestamoRepository.save(prestamo);
-        
-        // Actualizar stock
+
         Libro libro = prestamo.getLibro();
         libro.setStockDisponible(libro.getStockDisponible() + 1);
         libroRepository.save(libro);
-        
+
         log.info("Libro devuelto: {}", prestamoId);
-        
+
         return new PrestamoDTO(prestamo);
     }
 
@@ -140,22 +130,22 @@ public class PrestamoService {
     public PrestamoDTO devolverLibroAdmin(Long prestamoId) {
         Prestamo prestamo = prestamoRepository.findById(prestamoId)
                 .orElseThrow(() -> new ResourceNotFoundException("Préstamo no encontrado con id: " + prestamoId));
-        
-        if (prestamo.getEstado() != Prestamo.EstadoPrestamo.ACTIVO && 
+
+        if (prestamo.getEstado() != Prestamo.EstadoPrestamo.ACTIVO &&
             prestamo.getEstado() != Prestamo.EstadoPrestamo.VENCIDO) {
             throw new RuntimeException("El préstamo no puede ser devuelto");
         }
-        
+
         prestamo.setFechaDevolucionReal(LocalDateTime.now());
         prestamo.setEstado(Prestamo.EstadoPrestamo.DEVUELTO);
         prestamoRepository.save(prestamo);
-        
+
         Libro libro = prestamo.getLibro();
         libro.setStockDisponible(libro.getStockDisponible() + 1);
         libroRepository.save(libro);
-        
+
         log.info("Admin devolvió libro: {}", prestamoId);
-        
+
         return new PrestamoDTO(prestamo);
     }
 
@@ -176,7 +166,7 @@ public class PrestamoService {
                 .map(prestamo -> {
                     PrestamoDTO dto = new PrestamoDTO(prestamo);
                     long diasRestantes = ChronoUnit.DAYS.between(
-                        LocalDateTime.now(), 
+                        LocalDateTime.now(),
                         prestamo.getFechaDevolucionEstimada()
                     );
                     dto.setDiasRestantes((int) diasRestantes);
@@ -224,7 +214,7 @@ public class PrestamoService {
                 Prestamo.EstadoPrestamo.ACTIVO,
                 Prestamo.EstadoPrestamo.VENCIDO,
                 ahora);
-        
+
         if (actualizados > 0) {
             log.info("Se actualizaron {} préstamos a estado VENCIDO", actualizados);
         }

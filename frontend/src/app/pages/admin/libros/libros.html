@@ -80,7 +80,6 @@
   </div>
 </div>
 
-<!-- Modal crear / editar -->
 <app-modal [abierto]="modalForm()" [titulo]="form.id ? 'Editar Libro' : 'Nuevo Libro'" icono="bi-book-half" (cerrar)="modalForm.set(false)">
   <form #f="ngForm" id="formLibro" (ngSubmit)="guardar(f)" novalidate [class.was-validated]="enviado()">
     <div class="mb-4">
@@ -121,7 +120,6 @@
   </div>
 </app-modal>
 
-<!-- Modal detalle -->
 <app-modal [abierto]="modalDetalle()" titulo="Detalle del Libro" icono="bi-info-circle" tema="teal" (cerrar)="modalDetalle.set(false)">
   @if (detalle(); as l) {
     <div class="text-center mb-4">

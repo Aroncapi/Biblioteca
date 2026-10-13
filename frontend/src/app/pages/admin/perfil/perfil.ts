@@ -45,7 +45,7 @@ export class AdminPerfil implements OnInit {
         this.notify.cerrar();
         this.modal.set(false);
         if (r.usuario.email !== actual.email) {
-          // el JWT está emitido para el correo anterior: hay que volver a iniciar sesión
+
           this.notify.ok('✅ Correo actualizado. Inicia sesión nuevamente.');
           setTimeout(() => this.auth.logout(), 1800);
         } else {

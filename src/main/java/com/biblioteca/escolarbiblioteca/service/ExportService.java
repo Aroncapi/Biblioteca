@@ -23,10 +23,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-/**
- * Servicio de exportación de reportes a diferentes formatos:
- * PDF (OpenHTMLtoPDF), Excel (Apache POI) y CSV (Apache Commons CSV).
- */
 @Service
 @Slf4j
 public class ExportService {
@@ -34,9 +30,6 @@ public class ExportService {
     private static final DateTimeFormatter FECHA_ARCHIVO =
             DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-    /**
-     * Genera un archivo PDF con una tabla estilizada.
-     */
     public byte[] exportarPdf(String titulo, String[] columnas, List<String[]> filas) {
         String html = construirHtml(titulo, columnas, filas);
         ByteArrayOutputStream salida = new ByteArrayOutputStream();
@@ -53,9 +46,6 @@ public class ExportService {
         return salida.toByteArray();
     }
 
-    /**
-     * Genera un archivo Excel (.xlsx) con encabezado resaltado.
-     */
     public byte[] exportarExcel(String nombreHoja, String[] columnas, List<String[]> filas) {
         try (XSSFWorkbook workbook = new XSSFWorkbook()) {
             Sheet sheet = workbook.createSheet(nombreHoja);
@@ -84,7 +74,6 @@ public class ExportService {
                 }
             }
 
-            // Ancho estimado de columnas
             for (int i = 0; i < columnas.length; i++) {
                 int anchoMax = columnas[i].length();
                 for (String[] fila : filas) {
@@ -104,9 +93,6 @@ public class ExportService {
         }
     }
 
-    /**
-     * Genera un archivo CSV codificado en UTF-8 con BOM (compatible con Excel).
-     */
     public byte[] exportarCsv(String[] columnas, List<String[]> filas) {
         try (StringWriter escritor = new StringWriter()) {
             CSVPrinter printer = new CSVPrinter(escritor,
@@ -115,7 +101,7 @@ public class ExportService {
                 printer.printRecord((Object[]) fila);
             }
             printer.flush();
-            // BOM UTF-8 para que Excel reconozca acentos y ñ
+
             String contenido = "\uFEFF" + escritor;
             return contenido.getBytes(StandardCharsets.UTF_8);
         } catch (IOException e) {
@@ -124,9 +110,6 @@ public class ExportService {
         }
     }
 
-    /**
-     * Nombre de archivo estándar: reporte_{tipo}_{fecha}.{ext}
-     */
     public String nombreArchivo(String tipo, String extension) {
         return "reporte_" + tipo + "_" + LocalDateTime.now().format(FECHA_ARCHIVO) + "." + extension;
     }

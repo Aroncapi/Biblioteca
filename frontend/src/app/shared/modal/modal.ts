@@ -1,6 +1,5 @@
 import { Component, input, output } from '@angular/core';
 
-/** Modal liviano (reemplaza a los .modal de Bootstrap JS). */
 @Component({
   selector: 'app-modal',
   template: `
@@ -28,5 +27,5 @@ export class Modal {
   tema = input<'azul' | 'teal'>('azul');
   grande = input(false);
   cerrar = output<void>();
-  cerrarFondo = false; // igual que data-bs-backdrop="static": no se cierra al hacer clic afuera
+  cerrarFondo = false;
 }

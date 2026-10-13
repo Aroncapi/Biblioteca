@@ -17,9 +17,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-/**
- * Pruebas unitarias de las reglas de negocio de LibroService.
- */
 @ExtendWith(MockitoExtension.class)
 class LibroServiceTest {
 
@@ -82,11 +79,10 @@ class LibroServiceTest {
 
     @Test
     void actualizarStock_porDebajoDeLosPrestados_lanzaError() {
-        // 5 en total, solo 1 disponible => 4 libros prestados
+
         Libro existente = libro(1L, 5, 1);
         when(libroRepository.findById(1L)).thenReturn(Optional.of(existente));
 
-        // Si piden bajar el total a 2, disponible quedaría en -2 => error
         RuntimeException ex = assertThrows(RuntimeException.class,
                 () -> libroService.update(1L, dto("LIB-001", 2)));
 
@@ -96,7 +92,7 @@ class LibroServiceTest {
 
     @Test
     void eliminarLibro_conPrestamosActivos_lanzaError() {
-        // stockDisponible < stockTotal => hay libros prestados
+
         Libro prestado = libro(1L, 5, 3);
         when(libroRepository.findById(1L)).thenReturn(Optional.of(prestado));
 

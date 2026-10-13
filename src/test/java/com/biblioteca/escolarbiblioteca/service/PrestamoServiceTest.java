@@ -21,10 +21,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-/**
- * Pruebas unitarias de las reglas de negocio de PrestamoService:
- * límites de préstamos, roles, stock y devoluciones.
- */
 @ExtendWith(MockitoExtension.class)
 class PrestamoServiceTest {
 
@@ -67,8 +63,6 @@ class PrestamoServiceTest {
         when(prestamoRepository.countByUsuarioAndEstado(usuario, Prestamo.EstadoPrestamo.ACTIVO))
                 .thenReturn(0L);
     }
-
-    // ---------- solicitarPrestamo ----------
 
     @Test
     void solicitarPrestamo_comoAdmin_lanzaError() {
@@ -141,14 +135,12 @@ class PrestamoServiceTest {
         var resultado = prestamoService.solicitarPrestamo(alumno, 1L);
 
         assertEquals(Prestamo.EstadoPrestamo.ACTIVO.name(), resultado.getEstado());
-        assertEquals(2, libro.getStockDisponible()); // bajó de 3 a 2
+        assertEquals(2, libro.getStockDisponible());
         ArgumentCaptor<Prestamo> captor = ArgumentCaptor.forClass(Prestamo.class);
         verify(prestamoRepository).save(captor.capture());
         assertNotNull(captor.getValue().getFechaDevolucionEstimada());
         assertEquals(Prestamo.EstadoPrestamo.ACTIVO, captor.getValue().getEstado());
     }
-
-    // ---------- devolverLibro ----------
 
     @Test
     void devolverPrestamo_deOtroUsuario_lanzaError() {
@@ -203,10 +195,8 @@ class PrestamoServiceTest {
 
         assertEquals(Prestamo.EstadoPrestamo.DEVUELTO.name(), resultado.getEstado());
         assertNotNull(prestamo.getFechaDevolucionReal());
-        assertEquals(2, libro.getStockDisponible()); // subió de 1 a 2
+        assertEquals(2, libro.getStockDisponible());
     }
-
-    // ---------- devolverLibroAdmin ----------
 
     @Test
     void devolverPrestamo_admin_prestamoYaDevuelto_lanzaError() {
@@ -241,7 +231,7 @@ class PrestamoServiceTest {
         var resultado = prestamoService.devolverLibroAdmin(1L);
 
         assertEquals(Prestamo.EstadoPrestamo.DEVUELTO.name(), resultado.getEstado());
-        assertEquals(1, libro.getStockDisponible()); // subió de 0 a 1
+        assertEquals(1, libro.getStockDisponible());
     }
 
     @Test

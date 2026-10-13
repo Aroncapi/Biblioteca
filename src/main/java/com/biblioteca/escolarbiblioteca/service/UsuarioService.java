@@ -29,7 +29,7 @@ public class UsuarioService {
         return usuarioRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado con email: " + email));
     }
-    
+
     public boolean existsByEmail(String email) {
         return usuarioRepository.existsByEmail(email);
     }
@@ -42,21 +42,21 @@ public class UsuarioService {
     @Transactional
     public Usuario update(Long id, Usuario usuarioDetails) {
         Usuario usuario = findById(id);
-        
+
         usuario.setNombre(usuarioDetails.getNombre());
         usuario.setApellido(usuarioDetails.getApellido());
         usuario.setEmail(usuarioDetails.getEmail());
-        
+
         if (usuarioDetails.getPassword() != null && !usuarioDetails.getPassword().isEmpty()) {
             usuario.setPassword(usuarioDetails.getPassword());
         }
-        
+
         if (usuario.getRol().getNombre() == Rol.ERol.ALUMNO) {
             usuario.setNivel(usuarioDetails.getNivel());
             usuario.setGrado(usuarioDetails.getGrado());
             usuario.setSeccion(usuarioDetails.getSeccion());
         }
-        
+
         return usuarioRepository.save(usuario);
     }
 

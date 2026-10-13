@@ -22,13 +22,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
 
-/**
- * Exportación de reportes a diferentes formatos: PDF, Excel (.xlsx) y CSV.
- * Ruta: GET /api/admin/reportes/{tipo}/export/{formato}
- * Tipos: prestamos-activos, prestamos-vencidos, historial, top-libros,
- *        usuarios-activos, estadisticas-categorias
- * Formatos: pdf, xlsx, csv
- */
 @RestController
 @RequestMapping("/api/admin/reportes")
 @PreAuthorize("hasRole('ADMIN')")
@@ -56,7 +49,6 @@ public class ReporteExportController {
 
         log.info("Exportando reporte '{}' en formato '{}'", tipo, formato);
 
-        // 1. Construir los datos del reporte
         String titulo;
         String nombreHoja;
         String[] columnas;
@@ -154,7 +146,6 @@ public class ReporteExportController {
 
         nombreHoja = tipo.substring(0, Math.min(tipo.length(), 31));
 
-        // 2. Exportar al formato solicitado
         byte[] contenido;
         String contentType;
         String extension;
@@ -186,7 +177,6 @@ public class ReporteExportController {
                     .body(Map.of("error", "Error al exportar el archivo: " + e.getMessage()));
         }
 
-        // 3. Responder como descarga
         String nombreArchivo = exportService.nombreArchivo(tipo, extension);
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + nombreArchivo + "\"")

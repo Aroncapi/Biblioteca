@@ -14,7 +14,6 @@ const COLORES: Record<Tipo, string> = {
   success: '#00c9b7', error: '#ff4757', warning: '#ffb347', info: '#3b8bc2'
 };
 
-/** Reemplaza a showNotification()/confirmAction() del header.html (SweetAlert2). */
 @Injectable({ providedIn: 'root' })
 export class NotifyService {
   toast(mensaje: string, tipo: Tipo = 'success') {
@@ -52,7 +51,6 @@ export class NotifyService {
 
   cerrar() { Swal.close(); }
 
-  /** Obtiene un mensaje legible desde cualquier forma de error que devuelve el backend. */
   mensajeError(err: unknown, porDefecto = 'Ocurrió un error inesperado'): string {
     if (err instanceof HttpErrorResponse) {
       if (err.status === 0) return 'No se pudo conectar con el servidor';

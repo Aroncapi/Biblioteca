@@ -102,7 +102,6 @@
   </div>
 </div>
 
-<!-- Detalle -->
 <app-modal [abierto]="!!detalle()" titulo="Detalle del Préstamo" icono="bi-info-circle" tema="teal" (cerrar)="detalle.set(null)">
   @if (detalle(); as p) {
     <div class="bg-light p-4 rounded-4">
@@ -122,7 +121,6 @@
   <div footer><button type="button" class="btn-modern primary" (click)="detalle.set(null)">Cerrar</button></div>
 </app-modal>
 
-<!-- Confirmar devolución -->
 <app-modal [abierto]="!!porDevolver()" titulo="Registrar Devolución" icono="bi-arrow-return-left" (cerrar)="porDevolver.set(null)">
   @if (porDevolver(); as p) {
     <div class="bg-light p-4 rounded-4">

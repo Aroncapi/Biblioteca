@@ -62,7 +62,7 @@ export class Prestamos {
   limpiar() { this.busqueda.set(''); this.fechaDesde.set(''); this.pagina.set(1); }
 
   verDetalle(p: Prestamo) {
-    // se vuelve a consultar para mostrar el dato más reciente del servidor
+
     this.detalle.set(p);
     this.api.getPrestamo(p.id).subscribe({ next: d => this.detalle.set(d), error: () => {} });
   }
