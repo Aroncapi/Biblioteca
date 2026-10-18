@@ -36,3 +36,7 @@ frontend/dist/
 .env.*
 !.env.example
 artifacts/
+
+Informe*
+LISTA-USUARIOS-BIBLIOTECA.txt
+*.docx
